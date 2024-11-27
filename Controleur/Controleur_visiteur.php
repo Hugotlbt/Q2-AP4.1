@@ -17,10 +17,16 @@ $Vue->setEntete(new Vue_Structure_Entete());
 
 switch ($action) {
     case "reinitmdpconfirm":
+        if (isset($_POST['email'])){
 
-          //comme un qqc qui manque... je dis ça ! je dis rien !
+         $nouveauMdp= \App\Fonctions\passgen1(10);
+         \App\Fonctions\envoyerMail($nouveauMdp);
+         \App\Modele\Modele_Utilisateur::Utilisateur_Modifier_motDePasse(\App\Modele\Modele_Utilisateur::Utilisateur_Select_ParLogin($_POST["email"])["idUtilisateur"],$nouveauMdp);
+        }
+         $_SESSION['reinitmdp'] = true;
 
-        $Vue->addToCorps(new Vue_Mail_Confirme());
+         $Vue->addToCorps(new Vue_Mail_Confirme());
+
 
         break;
     case "reinitmdp":
@@ -40,6 +46,10 @@ switch ($action) {
                 if ($utilisateur["desactiver"] == 0) {
                     if ($_REQUEST["password"] == $utilisateur["motDePasse"]) {
                         $_SESSION["idUtilisateur"] = $utilisateur["idUtilisateur"];
+                        if (isset($_SESSION["reinitmdp"]) && $_SESSION['reinitmdp']){
+                            header("Location:index.php?case=Gerer_moncompte&action=changerMDP");
+                        }
+                        $_SESSION['idUtilisateur'] = $utilisateur['idUtilisateur'];
                         //error_log("idUtilisateur : " . $_SESSION["idUtilisateur"]);
                         $_SESSION["idCategorie_utilisateur"] = $utilisateur["idCategorie_utilisateur"];
                         //error_log("idCategorie_utilisateur : " . $_SESSION["idCategorie_utilisateur"]);
