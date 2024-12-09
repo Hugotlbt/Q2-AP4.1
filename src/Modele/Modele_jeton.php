@@ -11,6 +11,7 @@ class Modele_jeton
      * @param $connexionPDO : connexion à la base de données
      */
     public static function InsertJeton(int $idUtilisateur, int $codeAction)
+
     // Inserer le token dans la BDD
     {
         $connexionPDO = Singleton_ConnexionPDO::getInstance();
@@ -31,13 +32,30 @@ class Modele_jeton
     }
 
 
-    public function Update(): void
+    public static function UpdateJeton(int $id): bool
     {
-
+        // update le token dans la BDD
+        $connexionPDO = Singleton_ConnexionPDO::getInstance();
+        $requetePreparee = $connexionPDO->prepare(
+            'UPDATE `token` 
+            SET `codeAction` = :codeAction
+            WHERE id = :id ');
+        $requetePreparee->bindValue(':id', $id);
+        $requetePreparee->bindValue(':codeAction', 0);
+        $reponse = $requetePreparee->execute();
+        return $reponse;
     }
 
-    public function Research(): void
+    public static function Research( string $token)
     {
-
+        // rechercher un token par sa valeur
+        $connexionPDO = Singleton_ConnexionPDO::getInstance();
+        $requetePreparee = $connexionPDO->prepare(
+            'SELECT * 
+            FROM `token`
+            WHERE valeur = :valeur');
+        $requetePreparee->bindValue(':valeur', $token);
+        $reponse = $requetePreparee->execute();
+        return $requetePreparee->fetchAll(PDO::FETCH_ASSOC);
     }
 }
